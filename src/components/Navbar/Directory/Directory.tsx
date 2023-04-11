@@ -12,7 +12,7 @@ const UserMenu: React.FC = ({ }) => {
             <MenuButton cursor="pointer"
                 padding="0px 6px"
                 borderRadius={4}
-                _hover={{ outlien: "1px solid", outlineColor: "gray.200", }}
+                _hover={{ outline: "1px solid", outlineColor: "gray.200", }}
                 mr={2}
                 ml={{ base: 1, md: 2 }}>
 
@@ -33,7 +33,7 @@ const UserMenu: React.FC = ({ }) => {
 
             <MenuList>
                 <MenuItem >
-                <Communities/>
+                    <Communities />
                 </MenuItem>
             </MenuList>
         </Menu>
