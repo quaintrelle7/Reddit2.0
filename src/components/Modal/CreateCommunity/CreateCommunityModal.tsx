@@ -49,12 +49,12 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({ open, handl
 
         try {
             const communityDocRef = doc(firestore, "communities", communityName)
-            const communityDoc = await getDoc(communityDocRef)
+            // const communityDoc = await getDoc(communityDocRef)
 
-            if (communityDoc.exists()) {
-                throw new Error(`r/${communityName} has been taken, try another`);
+            // if (communityDoc.exists()) {
+            //     throw new Error(`r/${communityName} has been taken, try another`);
 
-            }
+            // }
 
 
 
@@ -64,35 +64,35 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({ open, handl
             //setDoc is the function from firebase to create 
             // or update the document
 
-            await setDoc(communityDocRef, {
-                creatorId: user?.uid,
-                creatorAt: serverTimestamp(),
-                numberOfMembers: 1,
-                privacyType: communityType,
+            // await setDoc(communityDocRef, {
+            //     creatorId: user?.uid,
+            //     creatorAt: serverTimestamp(),
+            //     numberOfMembers: 1,
+            //     privacyType: communityType,
 
-            });
+            // });
 
-            // await runTransaction(firestore, async (transaction) => {
-            //     const communityDoc = await transaction.get(communityDocRef);
-            //     if (communityDoc.exists()) {
-            //         throw new Error(`Sorry, /r${name} is taken. Try another.`);
-            //     }
+            await runTransaction(firestore, async (transaction) => {
+                const communityDoc = await transaction.get(communityDocRef);
+                if (communityDoc.exists()) {
+                    throw new Error(`Sorry, /r${name} is taken. Try another.`);
+                }
 
-            //     transaction.set(communityDocRef, {
-            //         creatorId: user?.uid,
-            //         createdAt: serverTimestamp(),
-            //         numberOfMembers: 1,
-            //         privacyType: "public",
-            //     });
+                transaction.set(communityDocRef, {
+                    creatorId: user?.uid,
+                    createdAt: serverTimestamp(),
+                    numberOfMembers: 1,
+                    privacyType: "public",
+                });
 
-            // transaction.set(
-            //     doc(firestore, `users/${userId}/communitySnippets`, name),
-            //     {
-            //         communityId: name,
-            //         isModerator: true,
-            //     }
-            // );
-            // });  
+            transaction.set(
+                doc(firestore, `users/${user?.uid}/communitySnippets`, communityName),
+                {
+                    communityId: communityName,
+                    isModerator: true,
+                }
+            );
+            });  
 
 
 
