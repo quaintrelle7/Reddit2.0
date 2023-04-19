@@ -1,10 +1,12 @@
 import { authModalState } from '@/atoms/authModalAtom';
 import { Button, Text, Flex, Input } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSetRecoilState } from 'recoil';
 import { useCreateUserWithEmailAndPassword } from "react-firebase-hooks/auth"
-import { auth } from "../../../firebase/clientApp"
+import { auth, firestore } from "../../../firebase/clientApp"
 import { FIREBASE_ERRORS } from "../../../firebase/errors"
+import { User } from 'firebase/auth';
+import { addDoc, collection } from 'firebase/firestore';
 
 
 const SignUp: React.FC = () => {
@@ -21,7 +23,7 @@ const SignUp: React.FC = () => {
 
     const [
         createUserWithEmailAndPassword,
-        user,
+        userCred,
         loading,
         userError,
     ] = useCreateUserWithEmailAndPassword(auth);
@@ -75,6 +77,16 @@ const SignUp: React.FC = () => {
 
         }));
     }
+
+    const createUserDocument = async (user: User) => {
+        await addDoc(collection(firestore, "users"), JSON.parse(JSON.stringify(user)));
+    };
+
+    useEffect(() => {
+        if (userCred) {
+            createUserDocument(userCred.user);
+        }
+    }, [userCred])
 
     const handleLogInClick = () => {
 
