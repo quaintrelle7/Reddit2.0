@@ -31,7 +31,7 @@ const useCommunityData = () => {
         try {
             //get users snippets
             const snippetDocs = await getDocs
-                (collection(firestore, `users/${user?.uid}/communities`));
+                (collection(firestore, `users/${user?.uid}/communitySnippets`));
 
             const snippets = snippetDocs.docs.map(doc => ({ ...doc.data() }));
             console.log("here are snippets", snippets);
@@ -51,6 +51,7 @@ const useCommunityData = () => {
         if(!user) return;
         getMySnippets();
     },[user])
+    
     return {
         communityStateValue,
         onJoinOrLeaveCommunity,
