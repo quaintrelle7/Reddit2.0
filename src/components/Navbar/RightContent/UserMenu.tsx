@@ -3,13 +3,14 @@ import { Button, Text, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, useDisc
 import React from 'react';
 import { authModalState } from '@/atoms/authModalAtom';
 import { User, signOut } from "firebase/auth"
-import { useSetRecoilState } from 'recoil';
+import { useResetRecoilState, useSetRecoilState } from 'recoil';
 import { FaRedditSquare } from "react-icons/fa"
 import { VscAccount } from "react-icons/vsc"
 import { IoSparkles } from 'react-icons/io5';
 import { CgProfile } from 'react-icons/cg';
 import { auth } from '@/firebase/clientApp';
 import { MdOutlineLogin } from 'react-icons/md'
+import { CommunityState } from '@/atoms/communitiesAtom';
 
 type UserMenuProps = {
 
@@ -17,8 +18,13 @@ type UserMenuProps = {
 };
 
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
-    const handleSignOutOnClick = () => {
-        signOut(auth)
+    
+    const resetCommunityState = useResetRecoilState(CommunityState);
+
+    const handleSignOutOnClick = async() => {
+        await signOut(auth)
+        //clear community State
+        resetCommunityState();
     }
 
     const setAuthModalState = useSetRecoilState(authModalState)

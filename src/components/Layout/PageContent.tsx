@@ -3,6 +3,7 @@ import { Box, Button, Flex, Icon, Image, Text } from '@chakra-ui/react';
 
 type PageContentProps = {
 
+    children: any;
 };
 
 const PageContent: React.FC<PageContentProps> = ({ children }) => {
@@ -16,8 +17,8 @@ const PageContent: React.FC<PageContentProps> = ({ children }) => {
                 </Flex>
 
                 {/* RHS */}
-                <Flex direction={"column"} display={{base:"none", md:"flex"}} flexGrow={1} >
-                    {children && children[1]}
+                <Flex direction={"column"} display={{ base: "none", md: "flex" }} flexGrow={1} >
+                    {children && children[1 as keyof typeof children]}
                 </Flex>
             </Flex>
         </Flex>
