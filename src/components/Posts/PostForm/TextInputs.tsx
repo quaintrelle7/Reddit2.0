@@ -1,4 +1,5 @@
 import { Stack, Textarea, Input, Flex, Button } from '@chakra-ui/react';
+import { text } from 'node:stream/consumers';
 import React from 'react';
 
 type TextInputsProps = {
@@ -11,14 +12,14 @@ type TextInputsProps = {
     loading: boolean;
 };
 
-const TextInputs: React.FC<TextInputsProps> = ({textInputs, onChange, handleCreatePost, loading}) => {
+const TextInputs: React.FC<TextInputsProps> = ({ textInputs, onChange, handleCreatePost, loading }) => {
 
     return (
         <Stack spacing={3} width="100%">
 
             <Input name="title"
                 value={textInputs.title}
-                onChange={onChange }
+                onChange={onChange}
                 fontSize={"10pt"}
                 borderRadius={4}
                 placeholder='Title'
@@ -49,7 +50,12 @@ const TextInputs: React.FC<TextInputsProps> = ({textInputs, onChange, handleCrea
                 }}
             ></Textarea>
             <Flex justify="flex-end">
-                <Button height="34px" padding="0px 30px" disabled={false} onClick={ }>
+                <Button
+                    height="34px"
+                    padding="0px 30px"
+                    disabled={true}
+                    isLoading={loading}
+                    onClick={handleCreatePost}>
 
                     Post
                 </Button>
