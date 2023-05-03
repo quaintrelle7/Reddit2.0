@@ -101,6 +101,8 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
                 console.log(downloadURL)
 
             }
+            router.back();
+
 
         } catch (error: any) {
             console.log("handleCreatePostError", error.message);
@@ -111,7 +113,6 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
 
         //redirect the bage to communityHomePage
 
-        // router.back();
     }
 
 
@@ -172,8 +173,8 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
             {true && (
                 <Alert status='error'>
                     <AlertIcon />
-                    <AlertTitle fontWeight={200}>Your browser is outdated!</AlertTitle>
-                    
+                    <AlertTitle fontWeight={200}>Error Creating Post</AlertTitle>
+
                 </Alert>
             )}
 

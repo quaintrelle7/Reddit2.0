@@ -26,11 +26,14 @@ const CommunityPage: React.FC<CommunityPageProps> = ({ communityData }) => {
 
         <Header communityData={communityData} />
         <PageContent>
-            
-            <CreatePostLink/>
-            <Posts communityData={communityData}/>
-           
-                
+            <>
+
+                <CreatePostLink />
+                <Posts communityData={communityData} />
+
+            </>
+
+
             <><div>RHS</div></>
         </PageContent>
 
