@@ -7,6 +7,7 @@ export interface Community {
   privacyType: "public" | "restricted" | "private";
   createdAt?: Timestamp;
   imageURL?: string;
+  creatorId: string;
 }
 
 export interface CommunitySnippet {
@@ -17,14 +18,14 @@ export interface CommunitySnippet {
 
 interface CommunityState {
   mySnippets: CommunitySnippet[];
-  //visitedCommunities
+  currentCommunity?: Community;
 }
 
 const defaultCommunityState: CommunityState = {
   mySnippets: [],
 };
 
-export const CommunityState = atom<CommunityState>({
+export const communityState = atom<CommunityState>({
   key: "communitiesState",
   default: defaultCommunityState,
 });

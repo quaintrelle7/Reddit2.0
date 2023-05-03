@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
-import { Community, CommunitySnippet, CommunityState } from '@/atoms/communitiesAtom';
+import { Community, CommunitySnippet, communityState } from '@/atoms/communitiesAtom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, firestore } from '@/firebase/clientApp';
 import { getDocs, doc, collection, increment } from 'firebase/firestore';
@@ -10,7 +10,7 @@ import { authModalState } from '@/atoms/authModalAtom';
 const useCommunityData = () => {
 
     const [communityStateValue, setCommunityStateValue] =
-        useRecoilState(CommunityState);
+        useRecoilState(communityState);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [user] = useAuthState(auth);

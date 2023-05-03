@@ -13,6 +13,7 @@ import { Post } from '@/atoms/postAtom';
 import { Timestamp, addDoc, collection, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { firestore, storage } from '@/firebase/clientApp';
 import { getDownloadURL, ref, uploadString } from 'firebase/storage';
+import useSelectFile from '@/hooks/useSelectFile';
 
 type NewPostFormProps = {
 
@@ -60,7 +61,9 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
     )
 
     const [loading, setLoading] = useState(false);
-    const [selectedFile, setSelectedFile] = useState<string>();
+    // const [selectedFile, setSelectedFile] = useState<string>();
+
+    const { selectedFile, setSelectedFile, onSelectFile } = useSelectFile();
 
     const handleCreatePost = async () => {
         const { communityId } = router.query;
@@ -115,24 +118,24 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
 
     }
 
+    //created image out of this
 
+    // const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     const reader = new FileReader();
 
-    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const reader = new FileReader();
+    //     //event.target.files is an array, we are taking only one image, the first one
 
-        //event.target.files is an array, we are taking only one image, the first one
+    //     if (event.target.files?.[0]) {
+    //         reader.readAsDataURL(event.target.files[0]);
 
-        if (event.target.files?.[0]) {
-            reader.readAsDataURL(event.target.files[0]);
+    //     }
 
-        }
-
-        reader.onload = (readerEvent) => {
-            if (readerEvent.target?.result) {
-                setSelectedFile(readerEvent.target.result as string);
-            }
-        }
-    }
+    //     reader.onload = (readerEvent) => {
+    //         if (readerEvent.target?.result) {
+    //             setSelectedFile(readerEvent.target.result as string);
+    //         }
+    //     }
+    // }
 
     const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {
@@ -165,7 +168,7 @@ const NewPostForm: React.FC<NewPostFormProps> = ({ user }) => {
 
                 {selectedTab == "Image & Video" && (<ImageUpload
                     selectedFile={selectedFile}
-                    setSelectedFile={setSelectedFile} setSelectedTab={setSelectedTab} onSelectImage={handleImageUpload} />)}
+                    setSelectedFile={setSelectedFile} setSelectedTab={setSelectedTab} onSelectImage={onSelectFile} />)}
 
 
             </Flex>
