@@ -1,11 +1,13 @@
 import { Community } from '@/atoms/communitiesAtom';
 import { auth } from '@/firebase/clientApp';
-import { Flex, Box, Text, Icon, Stack, Divider, Button } from '@chakra-ui/react';
+import useSelectFile from '@/hooks/useSelectFile';
+import { Flex, Box, Text, Icon, Stack, Divider, Button, Image, Spinner } from '@chakra-ui/react';
 import moment from 'moment';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { FaReddit } from 'react-icons/fa';
 import { HiOutlineDotsHorizontal } from "react-icons/hi"
 import { RiCakeLine } from "react-icons/ri"
 
@@ -17,7 +19,15 @@ const About: React.FC<AboutProps> = ({ communityData }) => {
     const router = useRouter();
 
     const [user] = useAuthState(auth);
-    const selectedFileRef = useRef<string>();
+    const selectedFileRef = useRef<HTMLInputElement>(null);
+
+    const { selectedFile, setSelectedFile, onSelectFile } = useSelectFile();
+
+    const [uploadingImage, setUploadingImage] = useState(false);
+
+    const handleUpdateImage = async () => {
+
+    }
 
     return (
         <Box position={"sticky"} top={"14px"}>
@@ -64,8 +74,23 @@ const About: React.FC<AboutProps> = ({ communityData }) => {
                             <Stack spacing={2} fontSize={"10pt"}>
                                 <Text fontWeight={600}>Admin</Text>
                                 <Flex align={"center"} justifyContent={"space-between"}>
-                                    <Text>Change Image</Text>
+                                    <Text color={"blue.500"} cursor={"pointer"} _hover={{ textDecoration: "underline" }}
+                                        onClick={() => { }}
+                                    >Change Image</Text>
+
+                                    {communityData.imageURL || selectedFile ? (
+                                        <Image src={selectedFile || communityData.imageURL} borderRadius={"full"} boxSize={"40px"} alt='Community Image' />
+                                    ) : (
+                                        <Icon as={FaReddit} color={"brand.100"} fontSize={"40px"} mr={2} />
+                                    )}
                                 </Flex>
+
+                                {selectedFile && (
+                                    uploadingImage ? (<Spinner />) : (<Text cursor={"pointer"} onClick={handleUpdateImage}>Save Changes</Text>)
+                                )}
+                                <input ref={selectedFileRef} type='file' hidden={true}
+                                    onChange={onSelectFile}
+                                />
                             </Stack>
                         </>
 
