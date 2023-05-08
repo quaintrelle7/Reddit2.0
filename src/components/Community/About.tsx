@@ -1,7 +1,9 @@
-import { Community } from '@/atoms/communitiesAtom';
-import { auth } from '@/firebase/clientApp';
+import { Community, communityState } from '@/atoms/communitiesAtom';
+import { auth, firestore, storage } from '@/firebase/clientApp';
 import useSelectFile from '@/hooks/useSelectFile';
 import { Flex, Box, Text, Icon, Stack, Divider, Button, Image, Spinner } from '@chakra-ui/react';
+import { doc, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadString } from 'firebase/storage';
 import moment from 'moment';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -10,6 +12,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { FaReddit } from 'react-icons/fa';
 import { HiOutlineDotsHorizontal } from "react-icons/hi"
 import { RiCakeLine } from "react-icons/ri"
+import { useSetRecoilState } from 'recoil';
 
 type AboutProps = {
     communityData: Community;
@@ -25,9 +28,35 @@ const About: React.FC<AboutProps> = ({ communityData }) => {
 
     const [uploadingImage, setUploadingImage] = useState(false);
 
-    const handleUpdateImage = async () => {
+    const setCommunityStateValue = useSetRecoilState(communityState);
 
-    }
+    const handleUpdateImage = async () => {
+        if (!selectedFile) return;
+
+        setUploadingImage(true);
+        try {
+            const imageRef = ref(storage, `communities/${communityData.id}/image`);
+            await uploadString(imageRef, selectedFile, "data_url");
+            const downloadURL = await getDownloadURL(imageRef);
+            await updateDoc(doc(firestore, "communities", communityData.id), {
+                imageURL: downloadURL,
+            });
+
+            setCommunityStateValue((prev) => ({
+                ...prev,
+                currentCommunity: {
+                    ...prev.currentCommunity,
+                    imageURL: downloadURL,
+                } as Community,
+            }));
+
+        }
+        catch (error) {
+            console.log("handleUpdateImage Error", error);
+        }
+
+        setUploadingImage(false);
+    };
 
     return (
         <Box position={"sticky"} top={"14px"}>
@@ -60,7 +89,7 @@ const About: React.FC<AboutProps> = ({ communityData }) => {
                     <Divider />
                     <Flex align={"center"} width={"100%"} p={1} fontWeight={500} fontSize={"10pt"}>
                         <Icon as={RiCakeLine} fontSize={18} mr={2} />
-                        <Text>Created At {moment(new Date(communityData.createdAt?.seconds * 1000)).format("MMM DD, YYYY")}
+                        <Text>Created At {moment(new Date(communityData.createdAt.seconds * 1000)).format("MMM DD, YYYY")}
                         </Text>
 
                     </Flex>
@@ -75,7 +104,7 @@ const About: React.FC<AboutProps> = ({ communityData }) => {
                                 <Text fontWeight={600}>Admin</Text>
                                 <Flex align={"center"} justifyContent={"space-between"}>
                                     <Text color={"blue.500"} cursor={"pointer"} _hover={{ textDecoration: "underline" }}
-                                        onClick={() => { }}
+                                        onClick={() => selectedFileRef.current?.click()}
                                     >Change Image</Text>
 
                                     {communityData.imageURL || selectedFile ? (
