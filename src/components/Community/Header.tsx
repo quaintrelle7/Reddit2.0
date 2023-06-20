@@ -20,8 +20,17 @@ const Header: React.FC<HeaderProps> = ({ communityData }) => {
             <Flex justify={"center"} bg="white" flexGrow={"50%"}>
                 <Flex width="95%" maxWidth="860px" border="1px solid white">
 
-                    {communityData.imageURL ? (
-                        <Image />
+                    {communityStateValue.currentCommunity?.imageURL ? (
+                        <Image
+                            src={communityStateValue.currentCommunity.imageURL} alt='community image'
+                            borderRadius={"full"}
+                            boxSize={"66px"}
+                            top={-3}
+                            position={"relative"}
+                            color={"blue.500"}
+                            border={"4px solid white"}
+
+                        />
                     ) :
                         (<Icon as={FaReddit}
                             fontSize={64}
@@ -42,11 +51,11 @@ const Header: React.FC<HeaderProps> = ({ communityData }) => {
                         </Flex>
                         <Button
                             variant={isJoined ? "outline" : "solid"}
-                            height="30px" px={6} 
+                            height="30px" px={6}
                             isLoading={loading}
-                            onClick={() => 
-                            onJoinOrLeaveCommunity(communityData, isJoined)}>
-                                {isJoined ? "Joined" : "Join"}</Button>
+                            onClick={() =>
+                                onJoinOrLeaveCommunity(communityData, isJoined)}>
+                            {isJoined ? "Joined" : "Join"}</Button>
                     </Flex>
 
                 </Flex>
