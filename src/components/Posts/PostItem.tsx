@@ -6,12 +6,13 @@ import { BsChat } from 'react-icons/bs';
 import { IoArrowBackCircleOutline, IoArrowDownCircleOutline, IoArrowDownCircleSharp, IoArrowRedoOutline, IoArrowUpCircleOutline, IoArrowUpCircleSharp, IoBookmarkOutline } from 'react-icons/io5';
 import { AiOutlineDelete } from 'react-icons/ai'
 import { parseJsonText } from 'typescript';
+import { useRouter } from 'next/router';
 
 type PostItemProps = {
     post: Post;
     userIsCreator: boolean;
     userVoteValue?: number;
-    onVote: (event: React.MouseEvent<SVGElement, MouseEvent>,post: Post, vote: number, communityId: string) => void;
+    onVote: (event: React.MouseEvent<SVGElement, MouseEvent>, post: Post, vote: number, communityId: string) => void;
     onSelectPost?: (post: Post) => void;
 
     //Js says async function can only return the promise
@@ -27,9 +28,11 @@ const PostItem: React.FC<PostItemProps> = ({ post, userIsCreator, userVoteValue,
     //When the value of onSelectPost is undefined, the value of singlePostPage is true
 
     const singlePostPage = !onSelectPost;
+    const router = useRouter();
 
-    const handleDelete = async () => {
+    const handleDelete = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 
+        event.stopPropagation();
         setLoadingDelete(true);
         try {
 
@@ -41,6 +44,10 @@ const PostItem: React.FC<PostItemProps> = ({ post, userIsCreator, userVoteValue,
             }
 
             console.log("Post successfully deleted!");
+
+            if (singlePostPage) {
+                router.push(`/r/${post.communityId}`)
+            }
 
         } catch (error: any) {
             //setError

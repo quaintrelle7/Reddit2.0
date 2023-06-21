@@ -3,15 +3,17 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import { Community, CommunitySnippet, communityState } from '@/atoms/communitiesAtom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth, firestore } from '@/firebase/clientApp';
-import { getDocs, doc, collection, increment } from 'firebase/firestore';
+import { getDocs, doc, collection, increment, getDoc } from 'firebase/firestore';
 import { WriteBatch, writeBatch } from 'firebase/firestore';
 import { authModalState } from '@/atoms/authModalAtom';
+import { useRouter } from 'next/router';
 
 const useCommunityData = () => {
 
     const [communityStateValue, setCommunityStateValue] =
         useRecoilState(communityState);
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
     const [error, setError] = useState('');
     const [user] = useAuthState(auth);
     const setAuthModalState = useSetRecoilState(authModalState);
@@ -19,9 +21,8 @@ const useCommunityData = () => {
         //Is the user signed In?
         //If not => Open Auth model
 
-        if(!user)
-        {
-            setAuthModalState({open:true, view: "login"});
+        if (!user) {
+            setAuthModalState({ open: true, view: "login" });
             return;
         }
         setLoading(true);
@@ -131,7 +132,7 @@ const useCommunityData = () => {
 
             setCommunityStateValue((prev) => ({
                 ...prev,
-                mySnippets: [...prev.mySnippets].filter(item=>item.communityId!==communityId),
+                mySnippets: [...prev.mySnippets].filter(item => item.communityId !== communityId),
             }));
 
             setLoading(false);
@@ -141,6 +142,33 @@ const useCommunityData = () => {
             setError(error.message);
         }
     };
+
+
+    const getCommunityData = async (communityId: string) => {
+        try {
+            const communityDocRef = doc(firestore, "communities", communityId);
+            const communityDoc = await getDoc(communityDocRef);
+
+            setCommunityStateValue((prev) => ({
+                ...prev,
+                currentCommunity: {
+                    id: communityDoc.id,
+                    ...communityDoc.data(),
+                } as Community
+            }))
+
+        } catch (error) {
+
+            console.log("CommunityDataError", error);
+        }
+    }
+
+    useEffect(() => {
+        const { communityId } = router.query;
+        if (communityId && !communityStateValue.currentCommunity) {
+            getCommunityData(communityId as string)
+        }
+    }, [router.query, communityStateValue.currentCommunity])
 
     //the below useEffect hook has dependency in the user, everytime 
     //the user chanes, it'll render and so will call the getSnippets function

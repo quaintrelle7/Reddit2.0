@@ -1,8 +1,15 @@
+import { communityState } from '@/atoms/communitiesAtom';
+import { Post } from '@/atoms/postAtom';
+import About from '@/components/Community/About';
 import PageContent from '@/components/Layout/PageContent';
+import Comments from '@/components/Posts/Comments/Comments';
 import PostItem from '@/components/Posts/PostItem';
-import { auth } from '@/firebase/clientApp';
+import { auth, firestore } from '@/firebase/clientApp';
+import useCommunityData from '@/hooks/useCommunityData';
 import usePosts from '@/hooks/usePosts';
-import React from 'react';
+import { doc, getDoc } from 'firebase/firestore';
+import { useRouter } from 'next/router';
+import React, { useEffect } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
 
@@ -10,7 +17,34 @@ const PostPage: React.FC = () => {
     const [user] = useAuthState(auth);
     const { postStateValue, setPostStateValue, onDeletePost, onVote } = usePosts();
 
+    const { communityStateValue } = useCommunityData();
 
+    const router = useRouter();
+
+    const fetchPost = async (postId: string) => {
+        try {
+
+            const postDocRef = doc(firestore, "posts", postId);
+            const postDoc = await getDoc(postDocRef);
+
+            setPostStateValue((prev) => ({
+                ...prev,
+                selectedPost: { id: postDoc.id, ...postDoc.data() } as Post,
+            }))
+
+        } catch (error) {
+            console.log("fetchData Error", error);
+        }
+    }
+
+    useEffect(() => {
+        const { pid } = router.query;
+
+        if (pid && !postStateValue.selectedPost) {
+            fetchPost(pid as string)
+        }
+
+    }, [router.query, postStateValue.selectedPost])
 
     return (
         <PageContent>
@@ -24,8 +58,15 @@ const PostPage: React.FC = () => {
                         userIsCreator={user?.uid === postStateValue.selectedPost?.creatorId}
 
                     />}
+
+                    <Comments/>
             </>
-            <></>
+            <>
+                {communityStateValue.currentCommunity && (
+
+                    <About communityData={communityStateValue.currentCommunity} />
+
+                )}  </>
         </PageContent>
     );
 }
